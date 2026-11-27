@@ -13,6 +13,25 @@ button:hover{filter:brightness(1.12)}
 #menu,#pause{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:linear-gradient(#071c31a6,#071c31e8)}
 .panel{width:min(92%,470px);padding:27px;border:2px solid #a5e7ff;border-radius:15px;background:linear-gradient(145deg,#274867,#12243b);box-shadow:0 20px 70px #0008;text-align:center}
 h1{font-size:37px;margin:4px 0;color:#9cff8b;text-shadow:3px 4px #285f35}
+#menu .menuMark{font-size:22px;opacity:.75;letter-spacing:6px;margin-bottom:2px}
+#menu .blockworld-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px 4px;margin:4px 0 6px;line-height:1;font-size:0;text-shadow:none;transform:scale(.72);transform-origin:center}
+#menu .bw-char{display:inline-flex;align-items:center;justify-content:center;width:28px;height:32px;font-size:21px;font-family:Arial Black,sans-serif;font-weight:900;line-height:1;color:#e8f4ff;border:2px solid #1e3345;border-radius:4px;box-shadow:2px 2px 0 #0a1520;background:#355470}
+#menu .bw-b{background:#3d6a52;color:#d4ffe0}
+#menu .bw-l1{background:#3d5868}
+#menu .bw-char.bw-block-o{width:28px;height:28px;padding:0;font-size:0;color:transparent;border:2px solid #ffffff80;border-radius:1px;box-sizing:border-box;position:relative}
+#menu .bw-o1{background:#67bd43;box-shadow:2px 3px 0 #3a6e28,inset 3px 3px 0 #8ad85c88,inset -3px -3px 0 #4a963066}
+#menu .bw-o1::after{content:"";position:absolute;inset:0;background:linear-gradient(145deg,#7ed456 0 38%,transparent 38%),linear-gradient(225deg,#528a38 0 42%,transparent 42%)}
+#menu .bw-c{background:#445a6a}
+#menu .bw-k{background:#4a5260}
+#menu .bw-w{width:32px;background:#3f5a50;color:#dcefe8}
+#menu .bw-o2{background:#80512f;box-shadow:2px 3px 0 #4a3018,inset 3px 3px 0 #9a684888,inset -3px -3px 0 #5c3d2266}
+#menu .bw-o2::after{content:"";position:absolute;inset:0;background:linear-gradient(145deg,#9a6848 0 38%,transparent 38%),linear-gradient(225deg,#5c3d22 0 42%,transparent 42%)}
+#menu .bw-r{background:#4a6070}
+#menu .bw-l2{background:#3a6648;color:#d8ffe8}
+#menu .bw-d1{background:#3f4870;color:#e4e8ff}
+#menu .bw-gap{width:6px;height:26px}
+#menu .bw-3{background:#2f5868;color:#c8eeff}
+#menu .bw-d2{background:#3a4454}
 .sub{color:#d3eaff;margin:8px 0 22px}
 .instructions{font-size:12px;line-height:1.9;color:#d7eaff;margin-top:17px}
 .brand{font-size:11px;letter-spacing:3px;color:#a8c8e5;margin-top:18px}
@@ -51,6 +70,8 @@ h1{font-size:37px;margin:4px 0;color:#9cff8b;text-shadow:3px 4px #285f35}
 @media(max-width:540px){
  #blockOptions{grid-template-columns:repeat(2,minmax(0,1fr))}
  h1{font-size:30px}
+ #menu .blockworld-title{transform:scale(.64);transform-origin:center}
+ #menu .menuMark{font-size:18px}
  .slot{width:42px;height:50px}
  .swatch{width:22px;height:22px}
  #help{font-size:10px;bottom:162px;padding:7px}
@@ -66,8 +87,22 @@ h1{font-size:37px;margin:4px 0;color:#9cff8b;text-shadow:3px 4px #285f35}
 
 <div id="menu">
  <div class="panel">
-  <div style="font-size:42px">🧱 ⛏️ 🌎</div>
-  <h1>BLOCKWORLD 3D</h1>
+  <div class="menuMark" aria-hidden="true">🧱 ⛏️ 🌎</div>
+  <h1 class="blockworld-title" aria-label="Blockworld 3D">
+   <span class="bw-char bw-b">B</span>
+   <span class="bw-char bw-l1">L</span>
+   <span class="bw-char bw-block-o bw-o1" aria-hidden="true" title="grass"></span>
+   <span class="bw-char bw-c">C</span>
+   <span class="bw-char bw-k">K</span>
+   <span class="bw-char bw-w">W</span>
+   <span class="bw-char bw-block-o bw-o2" aria-hidden="true" title="dirt"></span>
+   <span class="bw-char bw-r">R</span>
+   <span class="bw-char bw-l2">L</span>
+   <span class="bw-char bw-d1">D</span>
+   <span class="bw-gap" aria-hidden="true"></span>
+   <span class="bw-char bw-3">3</span>
+   <span class="bw-char bw-d2">D</span>
+  </h1>
   <div class="sub">INFINITE-STYLE MOUNTAIN WORLD</div>
   <button id="play">▶ CREATE WORLD</button>
   <button id="load">📂 LOAD WORLD</button>
@@ -176,6 +211,43 @@ scene.add(hemiLight);
 const sun=new THREE.DirectionalLight(0xfff1d0,2);
 sun.position.set(-35,55,24);
 scene.add(sun);
+
+const sunVisual=new THREE.Group();
+sunVisual.frustumCulled=false;
+const sunCore=new THREE.Mesh(
+ new THREE.SphereGeometry(2.2,20,14),
+ new THREE.MeshBasicMaterial({color:0xfff8c8,fog:false,depthTest:false,depthWrite:false})
+);
+sunCore.renderOrder=1002;
+const sunGlow=new THREE.Mesh(
+ new THREE.SphereGeometry(4.2,18,12),
+ new THREE.MeshBasicMaterial({
+  color:0xffdd50,
+  transparent:true,
+  opacity:.58,
+  fog:false,
+  depthTest:false,
+  depthWrite:false
+ })
+);
+sunGlow.renderOrder=1001;
+const sunHalo=new THREE.Mesh(
+ new THREE.SphereGeometry(6.5,16,12),
+ new THREE.MeshBasicMaterial({
+  color:0xffee88,
+  transparent:true,
+  opacity:.28,
+  fog:false,
+  depthTest:false,
+  depthWrite:false
+ })
+);
+sunHalo.renderOrder=1000;
+sunVisual.add(sunHalo);
+sunVisual.add(sunGlow);
+sunVisual.add(sunCore);
+scene.add(sunVisual);
+const sunSkyVec=new THREE.Vector3();
 
 // Hand light: follows the camera; press L to toggle.
 const flashlight=new THREE.SpotLight(0xfff4d8,0,34,Math.PI/5,0.62,1.15);
@@ -533,6 +605,33 @@ const volcanicRockMat=material(
  ["#ff9b1a","#ff5a18","#e63b18","#ffe96a","#ffb52e"],
  12
 );
+const snowMat=material("#f2f5f8",["#e4e8ec","#ffffff","#d8dde3"],16);
+const obsidianMat=material("#2a1838",["#140c18","#3d2850","#1f1228"],17);
+const goldMat=material("#f0c030",["#d9a318","#ffe066","#c49212"],18);
+const coalMat=material("#2a2e34",["#121418","#3a4048","#1e2228"],19);
+const gravelMat=material("#8a8580",["#6e6a66","#a39e98","#75716c"],20);
+const emeraldMat=material("#2ecc71",["#1a9b52","#5fe89a","#24b863"],21);
+const clayMat=material("#b87d5e",["#9a6348","#d49a78","#a06d50"],22);
+const torchStickWoodMat=material("#6b4423",["#4e3018","#8a5a32","#5c3a20"],24);
+const torchCoalMat=new THREE.MeshLambertMaterial({color:0x2a2228});
+const torchFlameMat=new THREE.MeshLambertMaterial({
+ color:0xff6600,
+ emissive:0xff5500,
+ emissiveIntensity:1.45,
+ transparent:true,
+ opacity:.9
+});
+const torchFlameCoreMat=new THREE.MeshLambertMaterial({
+ color:0xffee88,
+ emissive:0xffcc44,
+ emissiveIntensity:1.95,
+ transparent:true,
+ opacity:.82
+});
+const torchStickGeo=new THREE.CylinderGeometry(.062,.088,.56,6);
+const torchCoalGeo=new THREE.BoxGeometry(.17,.12,.17);
+const torchFlameGeo=new THREE.ConeGeometry(.12,.27,7);
+const torchFlameCoreGeo=new THREE.ConeGeometry(.068,.16,6);
 
 const materials={
  grass:[grassSide,grassSide,grassTop,dirtMat,grassSide,grassSide],
@@ -548,13 +647,21 @@ const materials={
  molten_rock:moltenRockMat,
  diamond:diamondMat,
  sapphire:sapphireMat,
+ snow:snowMat,
+ obsidian:obsidianMat,
+ gold:goldMat,
+ coal:coalMat,
+ gravel:gravelMat,
+ emerald:emeraldMat,
+ clay:clayMat,
  bedrock:bedrockMat
 };
 
 const types=[
  "grass","dirt","stone","sand",
  "wood","leaves","brick","volcanic_rock",
- "ruby","water","molten_rock","diamond","sapphire"
+ "ruby","water","molten_rock","diamond","sapphire",
+ "snow","obsidian","gold","coal","gravel","emerald","clay","torch"
 ];
 
 const colors={
@@ -570,7 +677,15 @@ const colors={
  water:"#258de8",
  molten_rock:"#ff5a18",
  diamond:"#38e4ee",
- sapphire:"#2858e8"
+ sapphire:"#2858e8",
+ snow:"#f2f5f8",
+ obsidian:"#2a1838",
+ gold:"#f0c030",
+ coal:"#2a2e34",
+ gravel:"#8a8580",
+ emerald:"#2ecc71",
+ clay:"#b87d5e",
+ torch:"#ffaa44"
 };
 
 const WORLD_LIMIT=500000;
@@ -588,7 +703,10 @@ const dummy=new THREE.Object3D();
 let inventory={
  grass:Infinity,dirt:Infinity,stone:Infinity,sand:Infinity,
  wood:Infinity,leaves:Infinity,brick:Infinity,volcanic_rock:Infinity,
- ruby:Infinity,water:Infinity,molten_rock:Infinity,diamond:Infinity,sapphire:Infinity
+ ruby:Infinity,water:Infinity,molten_rock:Infinity,diamond:Infinity,sapphire:Infinity,
+ snow:Infinity,obsidian:Infinity,gold:Infinity,
+ coal:Infinity,gravel:Infinity,emerald:Infinity,clay:Infinity,
+ torch:Infinity
 };
 
 let selected=0;
@@ -615,7 +733,54 @@ let animateFrame=0;
 let cloudMatricesFrame=-1;
 let lastChunkUnloadAt=0;
 const CLOUD_COLLIDE_MIN_Y=33;
-let selectionBox=null;
+function mineBlock(){
+ const target=getTarget();
+ if(!target)return;
+
+ const x=Math.round(target.b.x);
+ const y=Math.round(target.b.y);
+ const z=Math.round(target.b.z);
+ const mountKey=K(x,y,z);
+ const stored=getBlock(x,y,z);
+
+ if(torchByBlockKey.has(mountKey)){
+  spawnBreakEffect(x,y,z,"torch");
+  removeTorchMount(x,y,z);
+  playMinePop("torch");
+
+  if(types.includes("torch"))inventory.torch++;
+
+  updateBlockPicker();
+  applyCrosshairTransform(1.4);
+  setTimeout(()=>applyCrosshairTransform(1),80);
+  return;
+ }
+
+ if(isBedrockCell(x,y,z)||stored?.type==="bedrock"){
+  toast("Bedrock is unbreakable!");
+  return;
+ }
+
+ const breakType=stored?.type||target.b.type;
+ spawnBreakEffect(x,y,z,breakType);
+
+ const removed=removeBlockData(x,y,z);
+ if(!removed)return;
+
+ playMinePop(removed.type);
+
+ if(types.includes(removed.type))inventory[removed.type]++;
+
+ const [mcx,mcz]=chunkCoords(x,z);
+ rebuildChunk(mcx,mcz);
+ scheduleNeighborRebuilds(mcx,mcz);
+ updateBlockPicker();
+
+ applyCrosshairTransform(1.4);
+ setTimeout(()=>{
+  applyCrosshairTransform(1);
+ },80);
+}
 
 const player={
  x:0,y:10,z:0,
@@ -627,22 +792,36 @@ const player={
 const keys={};
 const raycaster=new THREE.Raycaster();
 raycaster.far=7;
+raycaster.firstHitOnly=true;
 const rayNdc=new THREE.Vector2(0,0);
 let chunkMeshVersion=0;
 let raycastMeshVersion=-1;
+let chunkMeshDirty=false;
 const raycastMeshes=[];
 
 function bumpChunkMeshes(){
+ chunkMeshDirty=true;
+}
+
+function ensureChunkMeshVersion(){
+ if(!chunkMeshDirty)return;
  chunkMeshVersion++;
+ chunkMeshDirty=false;
 }
 
 function getRaycastMeshes(){
+ ensureChunkMeshVersion();
+
  if(raycastMeshVersion!==chunkMeshVersion){
   raycastMeshVersion=chunkMeshVersion;
   raycastMeshes.length=0;
 
   for(const c of chunks.values()){
    for(const mesh of c.meshes)raycastMeshes.push(mesh);
+  }
+
+  for(const entry of torchVisuals.values()){
+   raycastMeshes.push(entry.hitMesh);
   }
  }
 
@@ -653,6 +832,16 @@ const outlineGeo=new THREE.EdgesGeometry(
  new THREE.BoxGeometry(1.012,1.012,1.012)
 );
 const outlineMat=new THREE.LineBasicMaterial({color:0xffffff});
+let selectionOutline=null;
+let lastSelectionKey="";
+
+function initSelectionOutline(){
+ if(selectionOutline)return;
+
+ selectionOutline=new THREE.LineSegments(outlineGeo,outlineMat);
+ selectionOutline.visible=false;
+ scene.add(selectionOutline);
+}
 
 let modifiedBlocks=new Map();
 let modifiedByChunk=new Map();
@@ -676,6 +865,67 @@ function getBlock(x,y,z){
  return blocks.get(K(x,y,z));
 }
 
+function isBedrockCell(x,y,z){
+ return y===BOTTOM||getBlock(x,y,z)?.type==="bedrock";
+}
+
+function getBlockForPhysics(x,y,z){
+ const block=getBlock(x,y,z);
+ if(block)return block;
+ if(y===BOTTOM&&inWorld(x,z))return{x,y,z,type:"bedrock"};
+ return null;
+}
+
+function ensureColumnBedrock(x,z){
+ if(!inWorld(x,z))return;
+ if(getBlock(x,BOTTOM,z))return;
+ setBlockData(x,BOTTOM,z,"bedrock");
+}
+
+function ensureChunkBedrock(cx,cz){
+ const minX=cx*CHUNK;
+ const minZ=cz*CHUNK;
+
+ for(let lx=0;lx<CHUNK;lx++){
+  for(let lz=0;lz<CHUNK;lz++){
+   ensureColumnBedrock(minX+lx,minZ+lz);
+  }
+ }
+}
+
+function blockCoordsFromHit(hit){
+ const n=hit.face.normal;
+ return{
+  x:Math.round(hit.point.x-n.x*.5),
+  y:Math.round(hit.point.y-n.y*.5),
+  z:Math.round(hit.point.z-n.z*.5)
+ };
+}
+
+function blockSolidForPlayer(block){
+ return block&&block.type!=="torch";
+}
+
+const weatherBlockHitCache=new Map();
+let weatherBlockHitCacheFrame=-1;
+
+function weatherBlockSolidAt(bx,by,bz){
+ if(weatherBlockHitCacheFrame!==animateFrame){
+  weatherBlockHitCache.clear();
+  weatherBlockHitCacheFrame=animateFrame;
+ }
+
+ const key=`${bx},${by},${bz}`;
+ let solid=weatherBlockHitCache.get(key);
+
+ if(solid===undefined){
+  solid=blockSolidForPlayer(getBlock(bx,by,bz));
+  weatherBlockHitCache.set(key,solid);
+ }
+
+ return solid;
+}
+
 function weatherSegmentHitsBlock(x1,y1,z1,x2,y2,z2){
  const bx1=Math.floor(x1);
  const bz1=Math.floor(z1);
@@ -685,10 +935,10 @@ function weatherSegmentHitsBlock(x1,y1,z1,x2,y2,z2){
  const yHi=Math.floor(Math.max(y1,y2));
 
  for(let by=yLo;by<=yHi;by++){
-  if(getBlock(bx1,by,bz1))return true;
+  if(weatherBlockSolidAt(bx1,by,bz1))return true;
 
   if(bx2!==bx1||bz2!==bz1){
-   if(getBlock(bx2,by,bz2))return true;
+   if(weatherBlockSolidAt(bx2,by,bz2))return true;
   }
  }
 
@@ -789,16 +1039,24 @@ function terrainHeight(x,z){
  return THREE.MathUtils.clamp(h,3,49);
 }
 
-function undergroundDarkness(){
- const surfaceY=terrainHeight(
-  Math.round(player.x),
-  Math.round(player.z)
- );
+let cachedUndergroundDark=0;
+let cachedUndergroundSample="";
 
+function undergroundDarkness(){
+ const px=Math.round(player.x);
+ const pz=Math.round(player.z);
+ const py=Math.round(player.y);
+ const sample=`${px},${py},${pz}`;
+
+ if(sample===cachedUndergroundSample)return cachedUndergroundDark;
+
+ cachedUndergroundSample=sample;
+
+ const surfaceY=terrainHeight(px,pz);
  const depthBelow=surfaceY-player.y;
 
- // Fade from open air into deep darkness over several blocks.
- return THREE.MathUtils.smoothstep(depthBelow,-1.5,9);
+ cachedUndergroundDark=THREE.MathUtils.smoothstep(depthBelow,-1.5,9);
+ return cachedUndergroundDark;
 }
 
 function isPyramidRegion(x,z){
@@ -807,17 +1065,299 @@ function isPyramidRegion(x,z){
  return hash2(regionX,regionZ,worldSeed+1801)<.20;
 }
 
-function setBlockData(x,y,z,type){
+const torchVisuals=new Map();
+const torchByBlockKey=new Map();
+const modifiedTorchAttach=new Map();
+
+function torchSupportType(type){
+ return type&&type!=="torch"&&type!=="water"&&type!=="leaves";
+}
+
+function torchFaceFromRecord(b){
+ if(b.face)return b.face;
+
+ const a=b.attach||{x:0,y:-1,z:0};
+ return{x:-a.x,y:-a.y,z:-a.z};
+}
+
+function torchAnchorPosition(b){
+ const f=torchFaceFromRecord(b);
+
+ if(b.mountOnBlock){
+  return{
+   x:b.x+f.x*.5,
+   y:b.y+f.y*.5,
+   z:b.z+f.z*.5
+  };
+ }
+
+ const a=b.attach||{x:0,y:-1,z:0};
+
+ return{
+  x:b.x+a.x+f.x*.5,
+  y:b.y+a.y+f.y*.5,
+  z:b.z+a.z+f.z*.5
+ };
+}
+
+function applyTorchPartLayout(group,stick,coal,flame,flameCore,face){
+ const fy=face.y;
+
+ if(fy===1){
+  stick.rotation.set(0,0,0);
+  stick.position.set(0,-.16,0);
+  coal.position.set(0,.01,0);
+  flame.position.set(0,.2,0);
+  flameCore.position.set(0,.18,0);
+  return;
+ }
+
+ if(fy===-1){
+  stick.rotation.x=Math.PI;
+  stick.position.set(0,.16,0);
+  coal.position.set(0,-.01,0);
+  flame.position.set(0,-.2,0);
+  flameCore.position.set(0,-.18,0);
+  return;
+ }
+
+ const fx=face.x;
+ const fz=face.z;
+
+ group.rotation.y=Math.atan2(fx,fz);
+ stick.rotation.x=-Math.PI/3.15;
+ stick.position.set(0,-.05,-.02);
+ coal.position.set(0,.06,.14);
+ flame.position.set(0,.2,.28);
+ flameCore.position.set(0,.18,.26);
+}
+
+function addTorchVisual(b){
+ const key=K(b.x,b.y,b.z);
+ if(torchVisuals.has(key))return;
+
+ const face=torchFaceFromRecord(b);
+ const group=new THREE.Group();
+ group.scale.setScalar(1);
+ const anchor=torchAnchorPosition(b);
+ group.position.set(anchor.x,anchor.y,anchor.z);
+
+ const stick=new THREE.Mesh(torchStickGeo,torchStickWoodMat);
+ const coal=new THREE.Mesh(torchCoalGeo,torchCoalMat);
+ const flame=new THREE.Mesh(torchFlameGeo,torchFlameMat);
+ const flameCore=new THREE.Mesh(torchFlameCoreGeo,torchFlameCoreMat);
+
+ applyTorchPartLayout(group,stick,coal,flame,flameCore,face);
+
+ const hitMesh=new THREE.Mesh(
+  new THREE.BoxGeometry(.36,.72,.36),
+  new THREE.MeshBasicMaterial({visible:false})
+ );
+
+ if(face.y!==1){
+  hitMesh.position.set(0,.02,.1);
+  hitMesh.scale.set(1,1,1.12);
+ }
+
+ hitMesh.userData.blockList=[b];
+ hitMesh.userData.torchHit=true;
+ group.add(stick,coal,flame,flameCore,hitMesh);
+
+ const phase=hash2(b.x,b.z,worldSeed+b.y*17)*Math.PI*2;
+ const light=new THREE.PointLight(0xffb858,7.5,15,1.75);
+ light.position.copy(flame.position);
+ group.add(light);
+
+ scene.add(group);
+
+ torchVisuals.set(key,{
+  group,
+  light,
+  flame,
+  flameCore,
+  hitMesh,
+  phase
+ });
+
+ markTorchFlickerListDirty();
+ bumpChunkMeshes();
+}
+
+function removeTorchVisualAtKey(key){
+ const entry=torchVisuals.get(key);
+ if(!entry)return;
+
+ scene.remove(entry.group);
+ entry.light.dispose();
+ torchVisuals.delete(key);
+ markTorchFlickerListDirty();
+ bumpChunkMeshes();
+}
+
+function clearAllTorchVisuals(){
+ for(const entry of torchVisuals.values()){
+  scene.remove(entry.group);
+  entry.light.dispose();
+ }
+ torchVisuals.clear();
+ markTorchFlickerListDirty();
+}
+
+function syncChunkTorches(ck){
+ const chunk=chunks.get(ck);
+ if(!chunk)return;
+
+ for(const key of chunk.blockKeys){
+  if(torchByBlockKey.has(key)){
+   addTorchVisual(torchByBlockKey.get(key));
+   continue;
+  }
+
+  const b=blocks.get(key);
+
+  if(b?.type==="torch")addTorchVisual(b);
+ }
+}
+
+function rebuildChunkTorches(chunk){
+ for(const key of chunk.blockKeys){
+  const wantsTorch=
+   torchByBlockKey.has(key)||blocks.get(key)?.type==="torch";
+
+  if(wantsTorch){
+   if(!torchVisuals.has(key)){
+    if(torchByBlockKey.has(key))addTorchVisual(torchByBlockKey.get(key));
+    else addTorchVisual(blocks.get(key));
+   }
+  }else if(torchVisuals.has(key)){
+   removeTorchVisualAtKey(key);
+  }
+ }
+}
+
+function clearTorchMountModification(x,y,z){
+ const key=K(x,y,z);
+ const [cx,cz]=chunkCoords(x,z);
+ const ck=chunkKey(cx,cz);
+
+ modifiedBlocks.delete(key);
+ modifiedTorchAttach.delete(key);
+ modifiedByChunk.get(ck)?.delete(key);
+}
+
+function removeTorchMount(x,y,z){
+ removeTorchVisualAtKey(K(x,y,z));
+ torchByBlockKey.delete(K(x,y,z));
+ clearTorchMountModification(x,y,z);
+ bumpChunkMeshes();
+}
+
+function placeTorchOnBlock(x,y,z,face){
+ x=Math.round(x);
+ y=Math.round(y);
+ z=Math.round(z);
+
+ face={
+  x:Math.round(face.x),
+  y:Math.round(face.y),
+  z:Math.round(face.z)
+ };
+
+ const key=K(x,y,z);
+ if(torchByBlockKey.has(key))return false;
+
+ const support=getBlock(x,y,z);
+ if(!support||!torchSupportType(support.type))return false;
+ if(!inWorld(x,z)||y<BOTTOM||y>MAX_HEIGHT)return false;
+
+ const [cx,cz]=chunkCoords(x,z);
+ if(!chunks.has(chunkKey(cx,cz)))return false;
+
+ const rec={
+  x,
+  y,
+  z,
+  type:"torch",
+  mountOnBlock:true,
+  face,
+  attach:{
+   x:-face.x,
+   y:-face.y,
+   z:-face.z
+  }
+ };
+
+ torchByBlockKey.set(key,rec);
+ modifiedTorchAttach.set(key,rec.attach);
+ recordModification(x,y,z,"torch");
+ addTorchVisual(rec);
+ bumpChunkMeshes();
+
+ return true;
+}
+
+let torchFlickerList=[];
+let torchFlickerListDirty=true;
+
+function markTorchFlickerListDirty(){
+ torchFlickerListDirty=true;
+}
+
+function updateTorchFlicker(t){
+ if(torchFlickerListDirty){
+  torchFlickerList=[...torchVisuals.values()];
+  torchFlickerListDirty=false;
+ }
+
+ for(let i=0;i<torchFlickerList.length;i++){
+  const entry=torchFlickerList[i];
+  entry.group.scale.setScalar(1);
+
+  const f=
+   .84+
+   .14*Math.sin(t*9.5+entry.phase)+
+   .07*Math.sin(t*16.7+entry.phase*1.9);
+
+  entry.light.intensity=6.9*f;
+  const s=.9+.14*Math.sin(t*11.2+entry.phase);
+  entry.flame.scale.set(s,s*1.08,s);
+  entry.flameCore.scale.set(.88+s*.18,.88+s*.22,.88+s*.18);
+  entry.flame.material.emissiveIntensity=1.35*f;
+  entry.flameCore.material.emissiveIntensity=1.85*f;
+ }
+}
+
+function setBlockData(x,y,z,type,attach){
  if(y<BOTTOM||y>MAX_HEIGHT||!inWorld(x,z))return;
+ if(y===BOTTOM&&type!=="bedrock")return;
 
  const key=K(x,y,z);
  const [cx,cz]=chunkCoords(x,z);
  const ck=chunkKey(cx,cz);
 
- blocks.set(key,{x,y,z,type});
+ const prev=blocks.get(key);
+ if(prev?.type==="bedrock"&&type!=="bedrock")return;
+ if(prev?.type==="torch")removeTorchVisualAtKey(key);
+
+ const block={x,y,z,type};
+
+ if(type==="torch"){
+  block.attach={
+   x:attach?.x??0,
+   y:attach?.y??-1,
+   z:attach?.z??0
+  };
+  modifiedTorchAttach.set(key,block.attach);
+ }else{
+  modifiedTorchAttach.delete(key);
+ }
+
+ blocks.set(key,block);
 
  const chunk=chunks.get(ck);
  if(chunk)chunk.blockKeys.add(key);
+
+ if(type==="torch")addTorchVisual(block);
 }
 
 function recordModification(x,y,z,type){
@@ -834,10 +1374,21 @@ function recordModification(x,y,z,type){
 }
 
 function removeBlockData(x,y,z){
+ x=Math.round(x);
+ y=Math.round(y);
+ z=Math.round(z);
+
  const key=K(x,y,z);
  const b=blocks.get(key);
 
- if(!b||b.type==="bedrock")return null;
+ if(!b||isBedrockCell(x,y,z)||b.type==="bedrock")return null;
+
+ if(torchByBlockKey.has(key))removeTorchMount(x,y,z);
+
+ if(b.type==="torch"){
+  removeTorchVisualAtKey(key);
+  modifiedTorchAttach.delete(key);
+ }
 
  blocks.delete(key);
  recordModification(x,y,z,null);
@@ -857,7 +1408,14 @@ function disposeChunk(cx,cz){
  cancelChunkJobIf(cx,cz);
 
  disposeChunkMeshes(old.meshes);
- for(const key of old.blockKeys)blocks.delete(key);
+ for(const key of old.blockKeys){
+  if(torchByBlockKey.has(key)){
+   removeTorchVisualAtKey(key);
+   torchByBlockKey.delete(key);
+  }
+  if(blocks.get(key)?.type==="torch")removeTorchVisualAtKey(key);
+  blocks.delete(key);
+ }
  chunks.delete(ck);
  bumpChunkMeshes();
 }
@@ -867,6 +1425,7 @@ function rebuildChunk(cx,cz){
  const old=chunks.get(ck);
  if(!old)return;
 
+ ensureChunkBedrock(cx,cz);
  disposeChunkMeshes(old.meshes);
 
  const buckets=bucketBlocksForChunk(old);
@@ -875,6 +1434,7 @@ function rebuildChunk(cx,cz){
  );
 
  appendChunkMeshes(old,buckets,typeKeys,0,typeKeys.length,ck);
+ rebuildChunkTorches(old);
  bumpChunkMeshes();
 }
 
@@ -1126,8 +1686,39 @@ function applyChunkEdits(cx,cz){
   if(y<BOTTOM||y>MAX_HEIGHT)continue;
 
   if(type===null){
+   if(torchByBlockKey.has(key)){
+    removeTorchVisualAtKey(key);
+    torchByBlockKey.delete(key);
+   }
+   modifiedTorchAttach.delete(key);
+   if(y===BOTTOM||blocks.get(key)?.type==="bedrock")continue;
    blocks.delete(key);
    chunk.blockKeys.delete(key);
+  }else if(type==="torch"){
+   const attach=modifiedTorchAttach.get(key)||{x:0,y:-1,z:0};
+   const existing=getBlock(x,y,z);
+
+   if(existing&&torchSupportType(existing.type)){
+    const face={
+     x:-attach.x,
+     y:-attach.y,
+     z:-attach.z
+    };
+    const rec={
+     x,
+     y,
+     z,
+     type:"torch",
+     mountOnBlock:true,
+     face,
+     attach:{x:attach.x,y:attach.y,z:attach.z}
+    };
+
+    torchByBlockKey.set(key,rec);
+    addTorchVisual(rec);
+   }else{
+    setBlockData(x,y,z,type,attach);
+   }
   }else{
    setBlockData(x,y,z,type);
   }
@@ -1144,13 +1735,18 @@ function disposeChunkMeshes(meshList){
  meshList.length=0;
 }
 
+function blockOccludesFace(x,y,z){
+ const block=getBlock(x,y,z);
+ return block&&block.type!=="torch";
+}
+
 function blockFaceExposed(x,y,z){
- if(!getBlock(x+1,y,z))return true;
- if(!getBlock(x-1,y,z))return true;
- if(!getBlock(x,y+1,z))return true;
- if(!getBlock(x,y-1,z))return true;
- if(!getBlock(x,y,z+1))return true;
- if(!getBlock(x,y,z-1))return true;
+ if(!blockOccludesFace(x+1,y,z))return true;
+ if(!blockOccludesFace(x-1,y,z))return true;
+ if(!blockOccludesFace(x,y+1,z))return true;
+ if(!blockOccludesFace(x,y-1,z))return true;
+ if(!blockOccludesFace(x,y,z+1))return true;
+ if(!blockOccludesFace(x,y,z-1))return true;
  return false;
 }
 
@@ -1180,11 +1776,35 @@ function drainOneNeighborRebuild(){
 
 function bucketBlocksForChunk(chunk){
  const buckets=new Map(chunkMaterialTypes.map(t=>[t,[]]));
+ const solidKeys=chunk.blockKeys;
+
+ function occludesFace(x,y,z){
+  const key=K(x,y,z);
+
+  if(solidKeys.has(key)){
+   const b=blocks.get(key);
+   return !!(b&&b.type!=="torch");
+  }
+
+  const b=getBlock(x,y,z);
+  return !!(b&&b.type!=="torch");
+ }
+
+ function faceExposed(x,y,z){
+  if(!occludesFace(x+1,y,z))return true;
+  if(!occludesFace(x-1,y,z))return true;
+  if(!occludesFace(x,y+1,z))return true;
+  if(!occludesFace(x,y-1,z))return true;
+  if(!occludesFace(x,y,z+1))return true;
+  if(!occludesFace(x,y,z-1))return true;
+  return false;
+ }
 
  for(const key of chunk.blockKeys){
   const b=blocks.get(key);
   if(!b||!buckets.has(b.type))continue;
-  if(!blockFaceExposed(b.x,b.y,b.z))continue;
+  if(b.type==="torch")continue;
+  if(!faceExposed(b.x,b.y,b.z))continue;
   buckets.get(b.type).push(b);
  }
 
@@ -1263,6 +1883,14 @@ function swapChunkMesh(chunk,oldMesh,newMesh){
 function patchAddBlockMesh(x,y,z,type){
  const b=blocks.get(K(x,y,z));
  if(!b)return false;
+
+ if(type==="torch"){
+  if(torchSupportType(getBlock(x,y,z)?.type)){
+   return placeTorchOnBlock(x,y,z,torchFaceFromRecord(b));
+  }
+  addTorchVisual(b);
+  return true;
+ }
 
  const [cx,cz]=chunkCoords(x,z);
  const ck=chunkKey(cx,cz);
@@ -1599,9 +2227,6 @@ function updateStreaming(force=false,simSteps=lastSimStepCount){
 }
 
 function generateWorld(){
- clearAllGameSaves();
- updateSaveButtons();
-
  activeChunkJob=null;
 
  for(const ck of [...chunks.keys()]){
@@ -1611,6 +2236,7 @@ function generateWorld(){
 
  blocks.clear();
  chunks.clear();
+ clearAllTorchVisuals();
  placeAnimationKeys.clear();
  blockEffects.splice(0,blockEffects.length);
  pendingChunks=[];
@@ -1618,6 +2244,8 @@ function generateWorld(){
  pendingNeighborRebuilds.clear();
  modifiedBlocks=new Map();
  modifiedByChunk=new Map();
+ modifiedTorchAttach.clear();
+ torchByBlockKey.clear();
  fluidPoolSurfaceY.clear();
 
  worldSeed=Math.floor(Math.random()*2147483646)+1;
@@ -1625,12 +2253,19 @@ function generateWorld(){
  inventory={
   grass:Infinity,dirt:Infinity,stone:Infinity,sand:Infinity,
   wood:Infinity,leaves:Infinity,brick:Infinity,volcanic_rock:Infinity,
-  ruby:Infinity,water:Infinity,molten_rock:Infinity,diamond:Infinity,sapphire:Infinity
+  ruby:Infinity,water:Infinity,molten_rock:Infinity,diamond:Infinity,sapphire:Infinity,
+  snow:Infinity,obsidian:Infinity,gold:Infinity,
+  coal:Infinity,gravel:Infinity,emerald:Infinity,clay:Infinity,
+  torch:Infinity
  };
 
  player.x=0;
  player.z=0;
  player.y=terrainHeight(0,0)+1.5;
+
+ weatherClock=dayLength*.375;
+ cachedDayPhase=.5;
+ cachedDaylight=1;
 
  yaw=0;
  pitch=0;
@@ -1748,7 +2383,6 @@ $("menuBtn").onclick=()=>{
 };
 
 $("exit").onclick=()=>{
- saveWorld();
  $("menuBtn").click();
 };
 
@@ -1903,13 +2537,29 @@ function getTarget(){
 
  const hit=hits[0];
  const list=hit.object.userData.blockList;
+ let x,y,z;
 
- if(!list||hit.instanceId==null)return null;
+ if(hit.instanceId!=null&&list?.[hit.instanceId]){
+  ({x,y,z}=list[hit.instanceId]);
+ }else if(list?.length){
+  ({x,y,z}=list[0]);
+ }else{
+  ({x,y,z}=blockCoordsFromHit(hit));
+ }
 
- const b=list[hit.instanceId];
- if(!b)return null;
+ x=Math.round(x);
+ y=Math.round(y);
+ z=Math.round(z);
 
- return {hit,b};
+ const stored=getBlock(x,y,z);
+ if(stored)return {hit,b:stored};
+
+ if(list?.length){
+  const listed=list[hit.instanceId??0]??list[0];
+  if(listed)return {hit,b:{...listed,x,y,z}};
+ }
+
+ return null;
 }
 
 function collidesAt(px,py,pz){
@@ -1923,7 +2573,7 @@ function collidesAt(px,py,pz){
  for(let x=minX;x<=maxX;x++){
   for(let z=minZ;z<=maxZ;z++){
    for(let y=minY;y<=maxY;y++){
-    if(getBlock(x,y,z))return true;
+    if(blockSolidForPlayer(getBlockForPhysics(x,y,z)))return true;
    }
   }
  }
@@ -1977,7 +2627,9 @@ function groundBelow(px,py,pz){
    const y=Math.floor(py+.5);
 
    for(let yy=y;yy>=Math.max(BOTTOM,y-5);yy--){
-    if(getBlock(x,yy,z)&&yy<py){
+    const block=getBlockForPhysics(x,yy,z);
+
+    if(blockSolidForPlayer(block)&&yy<py){
      top=Math.max(top,yy+.5);
      break;
     }
@@ -2069,13 +2721,13 @@ function movePlayer(dt){
 
   player.y=nextY;
 
-  if(player.y<BOTTOM+1){
-   const h=terrainHeight(Math.round(player.x),Math.round(player.z));
-   player.y=h+2;
+  if(player.y<BOTTOM+1.5){
+   ensureColumnBedrock(Math.round(player.x),Math.round(player.z));
+   player.y=BOTTOM+1.5;
    velocityY=0;
-   onGround=false;
+   onGround=true;
    jumpsRemaining=2;
-   toast("Returned safely to the surface!");
+   toast("Bedrock caught you — the deep is blocked!");
   }
  }
 
@@ -2088,6 +2740,12 @@ const effectCubeGeometry=new THREE.BoxGeometry(1,1,1);
 function setPlacedBlockScale(key,scale){
  const block=blocks.get(key);
  if(!block)return;
+
+ if(torchByBlockKey.has(key)||block.type==="torch"){
+  const entry=torchVisuals.get(key);
+  if(entry)entry.group.scale.setScalar(Math.max(.001,scale));
+  return;
+ }
 
  const [cx,cz]=chunkCoords(block.x,block.z);
  const chunk=chunks.get(chunkKey(cx,cz));
@@ -2112,6 +2770,33 @@ function setPlacedBlockScale(key,scale){
 function spawnPlaceEffect(x,y,z,type){
  const key=K(x,y,z);
 
+ if(type==="torch"){
+  const rec=torchByBlockKey.get(key);
+  const anchor=rec?torchAnchorPosition(rec):{x,y,z};
+  const flashMat=new THREE.MeshBasicMaterial({
+   color:colors.torch,
+   transparent:true,
+   opacity:.65
+  });
+  const flash=new THREE.Mesh(
+   new THREE.BoxGeometry(.5,.5,.5),
+   flashMat
+  );
+
+  flash.position.set(anchor.x,anchor.y,anchor.z);
+  scene.add(flash);
+
+  blockEffects.push({
+   kind:"placeFlash",
+   mesh:flash,
+   age:0,
+   duration:.18,
+   material:flashMat
+  });
+
+  return;
+ }
+
  placeAnimationKeys.add(key);
  setPlacedBlockScale(key,.08);
 
@@ -2119,17 +2804,36 @@ function spawnPlaceEffect(x,y,z,type){
   kind:"placeBlock",
   key,
   age:0,
-  duration:.28
+  duration:.24
  });
 
- // These blocks are plain blocks without extra placement effects.
- if(["volcanic_rock","water","molten_rock","ruby","diamond","sapphire"].includes(type))return;
+ const flashMat=new THREE.MeshBasicMaterial({
+  color:colors[type]||"#e8fff0",
+  transparent:true,
+  opacity:.55
+ });
 
- const ringGeo=new THREE.RingGeometry(.12,.19,18);
+ const flash=new THREE.Mesh(
+  new THREE.BoxGeometry(1.04,1.04,1.04),
+  flashMat
+ );
+
+ flash.position.set(x,y,z);
+ scene.add(flash);
+
+ blockEffects.push({
+  kind:"placeFlash",
+  mesh:flash,
+  age:0,
+  duration:.16,
+  material:flashMat
+ });
+
+ const ringGeo=new THREE.RingGeometry(.1,.22,20);
  const ringMat=new THREE.MeshBasicMaterial({
   color:colors[type]||"#ffffff",
   transparent:true,
-  opacity:.9,
+  opacity:.75,
   side:THREE.DoubleSide,
   depthWrite:false
  });
@@ -2143,7 +2847,7 @@ function spawnPlaceEffect(x,y,z,type){
   kind:"ring",
   mesh:ring,
   age:0,
-  duration:.3,
+  duration:.36,
   material:ringMat
  });
 }
@@ -2241,9 +2945,15 @@ function updateBlockEffects(dt){
   const t=Math.min(1,e.age/e.duration);
 
   if(e.kind==="placeBlock"){
-   const scale=t<.72
-    ? .08+(t/.72)*.98
-    : 1.06-(t-.72)/.28*.06;
+   let scale;
+
+   if(t<.42){
+    scale=.04+(t/.42)*1.14;
+   }else if(t<.72){
+    scale=1.14-((t-.42)/.3)*.12;
+   }else{
+    scale=1.02-((t-.72)/.28)*.02;
+   }
 
    setPlacedBlockScale(e.key,scale);
 
@@ -2265,13 +2975,16 @@ function updateBlockEffects(dt){
    e.mesh.scale.setScalar(Math.max(0,1-t));
 
   }else if(e.kind==="ring"){
-   const scale=.6+t*4;
+   const scale=.55+t*3.6;
    e.mesh.scale.set(scale,scale,scale);
-   e.material.opacity=.9*(1-t);
+   e.material.opacity=.75*(1-t);
 
   }else if(e.kind==="flash"){
    e.mesh.scale.setScalar(1+t*.45);
    e.material.opacity=.7*(1-t);
+  }else if(e.kind==="placeFlash"){
+   e.mesh.scale.setScalar(.82+t*.28);
+   e.material.opacity=.55*(1-t);
   }else if(e.kind==="waterBreak"){
    const thinT=THREE.MathUtils.clamp(e.age/(.82*.42),0,1);
    const riseT=THREE.MathUtils.clamp((e.age-.14)/(.82*.78),0,1);
@@ -2318,24 +3031,55 @@ function canPlace(x,y,z){
  return true;
 }
 
+function canPlaceTorchOnBlock(x,y,z){
+ if(!inWorld(x,z)||y<BOTTOM||y>MAX_HEIGHT)return false;
+
+ const support=getBlock(x,y,z);
+
+ if(!support||!torchSupportType(support.type))return false;
+ if(torchByBlockKey.has(K(x,y,z)))return false;
+
+ if(
+  Math.abs(player.x-(x+.5))<.82&&
+  Math.abs(player.z-(z+.5))<.82&&
+  Math.abs(player.y+1-(y+.5))<1.45
+ )return false;
+
+ const [cx,cz]=chunkCoords(x,z);
+ return chunks.has(chunkKey(cx,cz));
+}
+
 function placeBlock(){
  const type=types[selected];
 
- if((inventory[type]||0)<=0){
+ const stock=inventory[type];
+ if(stock!==Infinity&&(stock||0)<=0){
   toast("No "+type+" blocks left!");
   return;
  }
 
  const target=getTarget();
  let x,y,z;
+ let torchFace=null;
 
  if(target){
   const {hit,b}=target;
   const normal=hit.face.normal;
 
-  x=b.x+Math.round(normal.x);
-  y=b.y+Math.round(normal.y);
-  z=b.z+Math.round(normal.z);
+  if(type==="torch"){
+   x=b.x;
+   y=b.y;
+   z=b.z;
+   torchFace={
+    x:Math.round(normal.x),
+    y:Math.round(normal.y),
+    z:Math.round(normal.z)
+   };
+  }else{
+   x=b.x+Math.round(normal.x);
+   y=b.y+Math.round(normal.y);
+   z=b.z+Math.round(normal.z);
+  }
 
  }else{
   const dir=new THREE.Vector3();
@@ -2367,6 +3111,33 @@ function placeBlock(){
     return;
    }
   }
+
+  if(type==="torch"){
+   const below=getBlock(x,y-1,z);
+
+   if(below&&torchSupportType(below.type)){
+    y=y-1;
+    torchFace={x:0,y:1,z:0};
+   }
+  }
+ }
+
+ if(type==="torch"){
+  torchFace=torchFace||{x:0,y:1,z:0};
+
+  if(!canPlaceTorchOnBlock(x,y,z)){
+   toast("Torch needs solid block support");
+   return;
+  }
+
+  if(placeTorchOnBlock(x,y,z,torchFace)){
+   spawnPlaceEffect(x,y,z,type);
+   playPlacePop(type);
+   if(stock!==Infinity)inventory[type]--;
+   updateBlockPicker();
+  }
+
+  return;
  }
 
  if(!canPlace(x,y,z)){
@@ -2377,12 +3148,12 @@ function placeBlock(){
  if(addBlock(x,y,z,type)){
   spawnPlaceEffect(x,y,z,type);
   playPlacePop(type);
-  inventory[type]--;
+  if(stock!==Infinity)inventory[type]--;
   updateBlockPicker();
  }
 }
 
-function addBlock(x,y,z,type){
+function addBlock(x,y,z,type,attach){
  x=Math.round(x);
  y=Math.round(y);
  z=Math.round(z);
@@ -2394,7 +3165,7 @@ function addBlock(x,y,z,type){
  const ck=chunkKey(cx,cz);
  if(!chunks.has(ck))return false;
 
- setBlockData(x,y,z,type);
+ setBlockData(x,y,z,type,type==="torch"?attach:undefined);
  recordModification(x,y,z,type);
  placeAnimationKeys.add(K(x,y,z));
 
@@ -2407,46 +3178,11 @@ function addBlock(x,y,z,type){
  return true;
 }
 
-function mineBlock(){
- const target=getTarget();
-
- if(!target){
-  toast("No block in reach");
-  return;
- }
-
- const {b}=target;
-
- if(b.type==="bedrock"){
-  toast("Bedrock is unbreakable!");
-  return;
- }
-
- spawnBreakEffect(b.x,b.y,b.z,b.type);
-
- const removed=removeBlockData(b.x,b.y,b.z);
- if(!removed)return;
-
- playMinePop(removed.type);
-
- if(types.includes(removed.type))inventory[removed.type]++;
-
- const [mcx,mcz]=chunkCoords(b.x,b.z);
- rebuildChunk(mcx,mcz);
- scheduleNeighborRebuilds(mcx,mcz);
- updateBlockPicker();
-
- applyCrosshairTransform(1.4);
- setTimeout(()=>{
-  applyCrosshairTransform(1);
- },80);
-}
-
 document.addEventListener("mousedown",e=>{
  if(document.pointerLockElement!==renderer.domElement||paused)return;
 
  if(e.button===0)mineBlock();
- if(e.button===2)placeBlock();
+ else if(e.button===2)placeBlock();
 });
 
 const SAVE_KEY="rainbow_blockworld_mountain_save";
@@ -2516,7 +3252,15 @@ function saveWorld(){
    seed:worldSeed,
    player:{x:player.x,y:player.y,z:player.z,yaw,pitch},
    inventory,
-   modified:[...modifiedBlocks.entries()]
+   modified:[...modifiedBlocks.entries()].map(([key,type])=>{
+    if(type==="torch"){
+     const a=
+      blocks.get(key)?.attach||
+      modifiedTorchAttach.get(key)||{x:0,y:-1,z:0};
+     return [key,type,[a.x,a.y,a.z]];
+    }
+    return [key,type];
+   })
   };
 
   clearAllGameSaves();
@@ -2548,6 +3292,7 @@ function loadWorld(){
 
   blocks.clear();
   chunks.clear();
+  clearAllTorchVisuals();
   placeAnimationKeys.clear();
   blockEffects.splice(0,blockEffects.length);
   pendingChunks=[];
@@ -2555,6 +3300,8 @@ function loadWorld(){
   pendingNeighborRebuilds.clear();
   modifiedBlocks=new Map();
   modifiedByChunk=new Map();
+  modifiedTorchAttach.clear();
+  torchByBlockKey.clear();
   fluidPoolSurfaceY.clear();
 
   worldSeed=data.seed||37219;
@@ -2573,6 +3320,14 @@ function loadWorld(){
    }
 
    modifiedByChunk.get(ck).set(key,type);
+
+   if(type==="torch"&&entry[2]){
+    modifiedTorchAttach.set(key,{
+     x:entry[2][0],
+     y:entry[2][1],
+     z:entry[2][2]
+    });
+   }
   }
 
   if(data.player){
@@ -2590,7 +3345,10 @@ function loadWorld(){
   inventory={
    grass:Infinity,dirt:Infinity,stone:Infinity,sand:Infinity,
    wood:Infinity,leaves:Infinity,brick:Infinity,volcanic_rock:Infinity,
-   ruby:Infinity,water:Infinity,molten_rock:Infinity,diamond:Infinity,sapphire:Infinity
+   ruby:Infinity,water:Infinity,molten_rock:Infinity,diamond:Infinity,sapphire:Infinity,
+   snow:Infinity,obsidian:Infinity,gold:Infinity,
+   coal:Infinity,gravel:Infinity,emerald:Infinity,clay:Infinity,
+   torch:Infinity
   };
 
   flight=false;
@@ -2696,29 +3454,35 @@ function updateClouds(dt){
    Math.sin(clock.elapsedTime*.0225+g.userData.seed)*.2;
  }
 
- clouds.updateMatrixWorld(true);
  cloudMatricesFrame=animateFrame;
  refreshCloudBoxCache();
 }
 
-const cloudBoxWorld=new THREE.Vector3();
 const cloudBoxCache=[];
 
 function refreshCloudBoxCache(){
  cloudBoxCache.length=0;
 
+ const ax=cloudAnchorX;
+ const az=cloudAnchorZ;
+
  for(const g of clouds.children){
+  const gx=g.position.x;
+  const gy=g.position.y;
+  const gz=g.position.z;
+
   for(const mesh of g.children){
    if(!mesh.isMesh||!mesh.geometry?.parameters)continue;
 
    const p=mesh.geometry.parameters;
-
-   mesh.getWorldPosition(cloudBoxWorld);
+   const mx=mesh.position.x;
+   const my=mesh.position.y;
+   const mz=mesh.position.z;
 
    cloudBoxCache.push({
-    cx:cloudBoxWorld.x,
-    cy:cloudBoxWorld.y,
-    cz:cloudBoxWorld.z,
+    cx:ax+gx+mx,
+    cy:gy+my,
+    cz:az+gz+mz,
     hw:p.width/2,
     hh:p.height/2,
     hd:p.depth/2
@@ -2801,6 +3565,8 @@ let nextWeatherName="Rain";
 let timeName="Day";
 let weatherChangeAt=55;
 let weatherClock=0;
+let cachedDayPhase=.5;
+let cachedDaylight=1;
 
 const weatherIcons={
  clear:"☀",
@@ -2977,8 +3743,8 @@ function updateWeatherAmbience(dt,active){
  const rainTarget=
   active&&(weather==="rain"||weather==="thunderstorm")
    ?weather==="thunderstorm"
-    ?.24
-    :.19
+    ?.15
+    :.1
    :0;
 
  const snowTarget=active&&weather==="snow"?.14:0;
@@ -2994,12 +3760,116 @@ function updateWeatherAmbience(dt,active){
  snowAmbience.gain.gain.setTargetAtTime(snowAmbience.level,t,.12);
 }
 
+let lastMinePopAt=0;
+
 function playMinePop(blockType){
- playBlockPop(blockType,"mine");
+ if(!weatherAudioContext)return;
+
+ const ctx=weatherAudioContext;
+ const t=ctx.currentTime;
+
+ if(t-lastMinePopAt<.048)return;
+ lastMinePopAt=t;
+
+ try{
+  const wet=blockType==="water"||blockType==="molten_rock";
+  const base=pitchForMineSound(blockType,false)*.88;
+
+  const body=ctx.createOscillator();
+  body.type="triangle";
+  body.frequency.setValueAtTime(base*.95,t);
+  body.frequency.exponentialRampToValueAtTime(base*.62,t+.055);
+
+  const bodyGain=ctx.createGain();
+  bodyGain.gain.setValueAtTime(.0001,t);
+  bodyGain.gain.exponentialRampToValueAtTime(wet?.12:.15,t+.008);
+  bodyGain.gain.exponentialRampToValueAtTime(.0001,t+.07);
+
+  const bodyFilter=ctx.createBiquadFilter();
+  bodyFilter.type="lowpass";
+  bodyFilter.frequency.value=wet?680:420;
+  bodyFilter.Q.value=.6;
+
+  const clickBuf=ctx.createBuffer(
+   1,
+   Math.floor(ctx.sampleRate*.018),
+   ctx.sampleRate
+  );
+  const click=clickBuf.getChannelData(0);
+
+  for(let i=0;i<click.length;i++){
+   click[i]=(Math.random()*2-1)*Math.pow(1-i/click.length,2.4);
+  }
+
+  const clickSrc=ctx.createBufferSource();
+  clickSrc.buffer=clickBuf;
+
+  const clickFilter=ctx.createBiquadFilter();
+  clickFilter.type="bandpass";
+  clickFilter.frequency.value=base*1.1;
+  clickFilter.Q.value=1.2;
+
+  const clickGain=ctx.createGain();
+  clickGain.gain.setValueAtTime(.045,t);
+  clickGain.gain.exponentialRampToValueAtTime(.0001,t+.022);
+
+  body.connect(bodyGain);
+  bodyGain.connect(bodyFilter);
+  bodyFilter.connect(ctx.destination);
+  clickSrc.connect(clickFilter);
+  clickFilter.connect(clickGain);
+  clickGain.connect(ctx.destination);
+
+  body.start(t);
+  body.stop(t+.08);
+  clickSrc.start(t);
+ }catch(e){}
 }
 
 function playPlacePop(blockType){
- playBlockPop(blockType,"place");
+ if(!weatherAudioContext)return;
+
+ try{
+  const ctx=weatherAudioContext;
+  const t=ctx.currentTime;
+  const base=pitchForMineSound(blockType,true)*1.02;
+
+  const tone=ctx.createOscillator();
+  tone.type="sine";
+  tone.frequency.setValueAtTime(base*1.15,t);
+  tone.frequency.exponentialRampToValueAtTime(base*2.05,t+.065);
+
+  const toneGain=ctx.createGain();
+  toneGain.gain.setValueAtTime(.0001,t);
+  toneGain.gain.exponentialRampToValueAtTime(.2,t+.006);
+  toneGain.gain.exponentialRampToValueAtTime(.0001,t+.1);
+
+  const shimmer=ctx.createOscillator();
+  shimmer.type="triangle";
+  shimmer.frequency.setValueAtTime(base*2.4,t);
+  shimmer.frequency.exponentialRampToValueAtTime(base*3.1,t+.05);
+
+  const shimmerGain=ctx.createGain();
+  shimmerGain.gain.setValueAtTime(.0001,t);
+  shimmerGain.gain.exponentialRampToValueAtTime(.08,t+.005);
+  shimmerGain.gain.exponentialRampToValueAtTime(.0001,t+.07);
+
+  const filter=ctx.createBiquadFilter();
+  filter.type="lowpass";
+  filter.frequency.setValueAtTime(900,t);
+  filter.frequency.exponentialRampToValueAtTime(2400,t+.04);
+
+  tone.connect(toneGain);
+  shimmer.connect(shimmerGain);
+  toneGain.connect(filter);
+  shimmerGain.connect(filter);
+  filter.connect(ctx.destination);
+
+  tone.start(t);
+  shimmer.start(t);
+  tone.stop(t+.11);
+  shimmer.stop(t+.09);
+ }catch(e){}
 }
 
 function playBlockPop(blockType,mode){
@@ -3010,37 +3880,49 @@ function playBlockPop(blockType,mode){
   const t=ctx.currentTime;
   const wet=blockType==="water"||blockType==="molten_rock";
   const place=mode==="place";
-  const base=pitchForMineSound(blockType)*(place?1.08:1);
+  const base=pitchForMineSound(blockType,place)*(place?1.08:.92);
 
   const lead=ctx.createOscillator();
   lead.type="sine";
-  lead.frequency.setValueAtTime(base*3.8,t);
-  lead.frequency.exponentialRampToValueAtTime(base*1.45,t+.045);
+  const leadStartMul=place?3.8:2.4;
+  const leadEndMul=place?1.45:1.18;
+  const leadDecay=place?.045:.034;
+  lead.frequency.setValueAtTime(base*leadStartMul,t);
+  lead.frequency.exponentialRampToValueAtTime(base*leadEndMul,t+leadDecay);
 
   const sparkle=ctx.createOscillator();
   sparkle.type="sine";
-  sparkle.frequency.setValueAtTime(base*5.6,t);
-  sparkle.frequency.exponentialRampToValueAtTime(base*2.1,t+.06);
+  const sparkleStartMul=place?5.6:3.2;
+  const sparkleEndMul=place?2.1:1.35;
+  const sparkleDecay=place?.06:.042;
+  sparkle.frequency.setValueAtTime(base*sparkleStartMul,t);
+  sparkle.frequency.exponentialRampToValueAtTime(base*sparkleEndMul,t+sparkleDecay);
 
   const leadGain=ctx.createGain();
+  const leadPeak=place?(wet?.34:.48):(wet?.18:.24);
+  const leadTail=place?.11:.072;
   leadGain.gain.setValueAtTime(.0001,t);
-  leadGain.gain.exponentialRampToValueAtTime(wet?.34:.48,t+.004);
-  leadGain.gain.exponentialRampToValueAtTime(.0001,t+.11);
+  leadGain.gain.exponentialRampToValueAtTime(leadPeak,t+.004);
+  leadGain.gain.exponentialRampToValueAtTime(.0001,t+leadTail);
 
   const sparkleGain=ctx.createGain();
+  const sparklePeak=place?.22:.12;
+  const sparkleTail=place?.09:.058;
   sparkleGain.gain.setValueAtTime(.0001,t);
-  sparkleGain.gain.exponentialRampToValueAtTime(place?.22:.3,t+.003);
-  sparkleGain.gain.exponentialRampToValueAtTime(.0001,t+.09);
+  sparkleGain.gain.exponentialRampToValueAtTime(sparklePeak,t+.003);
+  sparkleGain.gain.exponentialRampToValueAtTime(.0001,t+sparkleTail);
 
+  const clickLen=place?.032:.022;
   const clickBuf=ctx.createBuffer(
    1,
-   Math.floor(ctx.sampleRate*.032),
+   Math.floor(ctx.sampleRate*clickLen),
    ctx.sampleRate
   );
   const click=clickBuf.getChannelData(0);
 
   for(let i=0;i<click.length;i++){
-   click[i]=(Math.random()*2-1)*Math.pow(1-i/click.length,1.35);
+   const falloff=place?1.35:2.1;
+   click[i]=(Math.random()*2-1)*Math.pow(1-i/click.length,falloff);
   }
 
   const clickSrc=ctx.createBufferSource();
@@ -3048,11 +3930,12 @@ function playBlockPop(blockType,mode){
 
   const clickFilter=ctx.createBiquadFilter();
   clickFilter.type="highpass";
-  clickFilter.frequency.value=wet?1400:2200;
+  clickFilter.frequency.value=wet?1400:(place?2200:1100);
 
   const clickGain=ctx.createGain();
-  clickGain.gain.setValueAtTime(place?.18:.28,t);
-  clickGain.gain.exponentialRampToValueAtTime(.0001,t+.04);
+  const clickPeak=place?.18:.11;
+  clickGain.gain.setValueAtTime(clickPeak,t);
+  clickGain.gain.exponentialRampToValueAtTime(.0001,t+(place?.04:.028));
 
   const mix=ctx.createGain();
   mix.gain.value=1;
@@ -3068,13 +3951,13 @@ function playBlockPop(blockType,mode){
 
   lead.start(t);
   sparkle.start(t);
-  lead.stop(t+.12);
-  sparkle.stop(t+.11);
+  lead.stop(t+leadTail+.01);
+  sparkle.stop(t+sparkleTail+.01);
   clickSrc.start(t);
  }catch(e){}
 }
 
-function pitchForMineSound(type){
+function pitchForMineSound(type,place){
  const table={
   stone:248,
   dirt:278,
@@ -3088,10 +3971,19 @@ function pitchForMineSound(type){
   water:305,
   molten_rock:210,
   diamond:420,
-  sapphire:398
+  sapphire:398,
+  snow:360,
+  obsidian:220,
+  gold:300,
+  coal:235,
+  gravel:275,
+  emerald:400,
+  clay:285,
+  torch:340
  };
 
- return(table[type]||290)+Math.random()*28;
+ const jitter=place?28:12;
+ return(table[type]||290)+Math.random()*jitter;
 }
 
 function playThunder(){
@@ -3265,15 +4157,45 @@ function stepWorldClock(dt){
  }
 }
 
+function positionSunInSky(){
+ if(cachedDaylight<=.01){
+  sunVisual.visible=false;
+  return;
+ }
+
+ if(undergroundDarkness()>.9){
+  sunVisual.visible=false;
+  return;
+ }
+
+ const arc=Math.sin(Math.PI*cachedDayPhase);
+ const h=.97+arc*.03;
+ const ax=-Math.cos(Math.PI*cachedDayPhase)*.08;
+
+ sunSkyVec
+  .set(ax,h,.04)
+  .normalize()
+  .multiplyScalar(90)
+  .add(camera.position);
+
+ sunVisual.position.copy(sunSkyVec);
+ sunVisual.visible=true;
+ sunVisual.scale.setScalar(.32+cachedDaylight*.22);
+ sunHalo.material.opacity=.28+cachedDaylight*.34;
+ sunGlow.material.opacity=.52+cachedDaylight*.44;
+ sunCore.material.color.setRGB(1,.95+.04*cachedDaylight,.6+.35*cachedDaylight);
+}
+
 function updateEnvironmentVisuals(dt){
  const phase=(weatherClock%dayLength)/dayLength;
 
  // Day lasts 75% of the cycle; night lasts 25%.
  let angle;
  let daylight;
+ let dayPhase=0;
 
  if(phase<.75){
-  const dayPhase=phase/.75;
+  dayPhase=phase/.75;
 
   angle=-Math.PI/2+dayPhase*Math.PI;
 
@@ -3285,6 +4207,9 @@ function updateEnvironmentVisuals(dt){
   angle=3*Math.PI/2;
   daylight=0;
  }
+
+ cachedDayPhase=dayPhase;
+ cachedDaylight=daylight;
 
  timeName=
   daylight>.72
@@ -3481,7 +4406,13 @@ function updateEnvironmentVisuals(dt){
 
   if(f.y<-.5){
    respawnWeatherDrop(f);
-  }else if(getBlock(Math.floor(wx),Math.floor(wy),Math.floor(wz))){
+  }else if(
+   weatherBlockSolidAt(
+    Math.floor(wx),
+    Math.floor(wy),
+    Math.floor(wz)
+   )
+  ){
    respawnWeatherDrop(f);
   }
 
@@ -3489,18 +4420,18 @@ function updateEnvironmentVisuals(dt){
   wy=player.y+f.y;
   wz=player.z+f.z;
 
-  let blocked=!!getBlock(
-   Math.floor(wx),
-   Math.floor(wy),
-   Math.floor(wz)
-  );
+  const sbx=Math.floor(wx);
+  const sby=Math.floor(wy);
+  const sbz=Math.floor(wz);
+
+  let blocked=weatherBlockSolidAt(sbx,sby,sbz);
 
   for(let t=0;t<8&&blocked;t++){
    respawnWeatherDrop(f);
    wx=player.x+f.x;
    wy=player.y+f.y;
    wz=player.z+f.z;
-   blocked=!!getBlock(
+   blocked=weatherBlockSolidAt(
     Math.floor(wx),
     Math.floor(wy),
     Math.floor(wz)
@@ -3548,11 +4479,13 @@ function animate(){
  requestAnimationFrame(animate);
 
  animateFrame++;
+ ensureChunkMeshVersion();
  const rawDt=Math.min(clock.getDelta(),.1);
  displayDt+= (rawDt-displayDt)*.26;
 
  updateClouds(displayDt);
  updateBlockEffects(displayDt);
+ updateTorchFlicker(clock.elapsedTime);
  updateWeatherAmbience(displayDt,running&&!paused);
 
  if(running&&!paused){
@@ -3600,15 +4533,20 @@ function animate(){
    lastTargetUpdate=clock.elapsedTime;
    const target=getTarget();
 
-   if(selectionBox){
-    scene.remove(selectionBox);
-    selectionBox=null;
-   }
+   initSelectionOutline();
 
    if(target){
-    selectionBox=new THREE.LineSegments(outlineGeo,outlineMat);
-    selectionBox.position.set(target.b.x,target.b.y,target.b.z);
-    scene.add(selectionBox);
+    const nextKey=K(target.b.x,target.b.y,target.b.z);
+
+    if(nextKey!==lastSelectionKey){
+     selectionOutline.position.set(target.b.x,target.b.y,target.b.z);
+     lastSelectionKey=nextKey;
+    }
+
+    selectionOutline.visible=true;
+   }else{
+    selectionOutline.visible=false;
+    lastSelectionKey="";
    }
   }
  }else{
@@ -3627,6 +4565,8 @@ function animate(){
   .addScaledVector(flashlightDirection,18);
 
  flashlight.target.updateMatrixWorld();
+
+ positionSunInSky();
 
  renderer.render(scene,camera);
 }
